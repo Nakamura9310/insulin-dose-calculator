@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Insulin Calculator</title>
+  </head>
+  <body onload="onLoad()">
+    <h1>Insulin Calculator</h1>
+
+    <h2>① おやつに必要なインスリン単位の計算</h2>
+    <label >おやつのカーボ量 (g): 
+      <input
+        type="number"
+        id="snackCarbs"
+        value="120"
+        style="width: 100px"
+        onchange="calcSnackInsulin(), autoResizeInput(this)"
+      />
+    </label><br/><br/>
+
+    <label for="insulinCarbs">1単位インスリンの処理カーボ量 (g): 
+      <input
+        type="number"
+        id="insulinCarbs"
+        value="20"
+        style="width: 100px"
+        onchange="calcSnackInsulin(), autoResizeInput(this)"
+      />
+    </label>
+
+    <p>
+      おやつに必要なインスリン単位: <span id="resultInsulin">
+    </p>
+
+    <h2>② 必要な補正インスリン単位の計算</h2>
+    <label for="preSnackGlucose">おやつ前血糖値: 
+      <input type="number" id="preSnackGlucose" value="200"
+      onchange="calcCorrectionInsulin()"/>
+    </label>
+      
+    <p id="goalGlucose">目標血糖値: 100</p>
+
+    <p>必要な補正インスリン単位: <span id="resultCorrection"></span></p>
+
+    <h2>▶ 必要なインスリン単位 <span id="totalInsulin"></span></h2>
+
+    <script>
+      // ページ読み込み時の処理
+      function onLoad() {
+        focusOnInput();
+        calcSnackInsulin();
+        calcCorrectionInsulin();
+      }
+
+      function calcSnackInsulin() {
+          const snackCarbs = parseFloat(document.getElementById('snackCarbs').value);
+          const insulinCarbs = parseFloat(document.getElementById('insulinCarbs').value);
+          const insulinUnits = (snackCarbs / insulinCarbs).toFixed(2); // 2桁までの小数点表示
+          document.getElementById('resultInsulin').innerText = insulinUnits;
+          calcTotalInsulin();
+      }
+
+      function calcCorrectionInsulin() {
+          const preSnackGlucose = parseFloat(document.getElementById('preSnackGlucose').value);
+          // Your calculation for correction insulin based on pre-snack glucose goes here
+          const correctionUnits = ( (preSnackGlucose-100)/50 ).toFixed(2);
+          document.getElementById('resultCorrection').innerText = correctionUnits;
+          calcTotalInsulin();
+      }
+
+      function calcTotalInsulin() {
+          const insulin = parseFloat(document.getElementById('resultInsulin').innerText);
+          const correction = parseFloat(document.getElementById('resultCorrection').innerText);
+          const totalInsulin = insulin + correction;
+          document.getElementById('totalInsulin').innerText = totalInsulin.toFixed(2);
+      }
+
+      // 幅自動調整
+      function autoResizeInput(el) {
+        el.style.width = (el.value.length + 3) + 'ch';
+      }
+
+      function focusOnInput() {
+        const input = document.getElementById('snackCarbs');
+        input.focus();
+      }
+    </script>
+  </body>
+</html>
