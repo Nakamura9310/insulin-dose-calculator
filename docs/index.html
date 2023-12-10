@@ -2,46 +2,87 @@
 <html>
   <head>
     <title>Insulin Calculator</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
   </head>
+
   <body onload="onLoad()">
     <h1>Insulin Calculator</h1>
 
-    <h2>① おやつに必要なインスリン単位の計算</h2>
-    <label >おやつのカーボ量 (g): 
+    <h2>①おやつに必要なインスリン単位の計算</h2>
+    <label
+      >おやつのカーボ量 (g):
       <input
         type="number"
         id="snackCarbs"
         value="120"
-        style="width: 100px"
-        onchange="calcSnackInsulin(), autoResizeInput(this)"
-      />
-    </label><br/><br/>
+        style="width: auto"
+        onchange="calcSnackInsulin(), autoResize(this)"
+      /> </label
+    ><br /><br />
 
-    <label for="insulinCarbs">1単位インスリンの処理カーボ量 (g): 
+    <label for="insulinCarbs"
+      >1単位インスリンの処理カーボ量 (g):
       <input
         type="number"
         id="insulinCarbs"
         value="20"
-        style="width: 100px"
-        onchange="calcSnackInsulin(), autoResizeInput(this)"
+        style="width: auto"
+        onchange="calcSnackInsulin(), autoResize(this)"
       />
     </label>
 
     <p>
-      おやつに必要なインスリン単位: <span id="resultInsulin">
+      おやつに必要なインスリン単位:
+      <span id="resultInsulin" class="highlight"></span>
     </p>
 
-    <h2>② 必要な補正インスリン単位の計算</h2>
-    <label for="preSnackGlucose">おやつ前血糖値: 
-      <input type="number" id="preSnackGlucose" value="200"
-      onchange="calcCorrectionInsulin()"/>
+    <h2>②必要な補正インスリン単位の計算</h2>
+    <label
+      >おやつ前血糖値:
+      <input
+        type="number"
+        id="preSnackGlucose"
+        value="200"
+        style="width: auto"
+        onchange="calcCorrectionInsulin(), autoResize(this)"
+      />
     </label>
-      
+
     <p id="goalGlucose">目標血糖値: 100</p>
 
-    <p>必要な補正インスリン単位: <span id="resultCorrection"></span></p>
+    <p>
+      必要な補正インスリン単位:
+      <span id="resultCorrection" class="highlight"></span>
+    </p>
 
-    <h2>▶ 必要なインスリン単位 <span id="totalInsulin"></span></h2>
+    <h2>③昼食時補正インスリンの残存計算</h2>
+    <label
+      >昼食前血糖値
+      <input
+        type="number"
+        id="preLunchGlucose"
+        value="200"
+        style="width: auto"
+        onchange="calcRemainingInsulin(), autoResize(this)"
+      />
+    </label>
+
+    <label
+      >昼食時間
+      <select id="lunchTime" class="time"></select>
+    </label>
+
+    <label
+      >おやつ時間
+      <select id="snackTime" class="time"></select>
+    </label>
+    <br />
+
+    <p>残存インスリン:<span id="remainingInsulin" class="highlight"></span></p>
+
+    <h2>
+      ▶ 必要なインスリン単位 <span id="totalInsulin" class="highlight"></span>
+    </h2>
 
     <script>
       // ページ読み込み時の処理
@@ -49,40 +90,112 @@
         focusOnInput();
         calcSnackInsulin();
         calcCorrectionInsulin();
+        calcRemainingInsulin();
       }
 
+      // ①おやつに必要なインスリン単位の計算
       function calcSnackInsulin() {
-          const snackCarbs = parseFloat(document.getElementById('snackCarbs').value);
-          const insulinCarbs = parseFloat(document.getElementById('insulinCarbs').value);
-          const insulinUnits = (snackCarbs / insulinCarbs).toFixed(2); // 2桁までの小数点表示
-          document.getElementById('resultInsulin').innerText = insulinUnits;
-          calcTotalInsulin();
+        const snackCarbs = parseFloat(
+          document.getElementById('snackCarbs').value
+        );
+        const insulinCarbs = parseFloat(
+          document.getElementById('insulinCarbs').value
+        );
+        const insulinUnits = (snackCarbs / insulinCarbs).toFixed(1); // 1桁までの小数点表示
+        document.getElementById('resultInsulin').innerText = insulinUnits;
+        calcTotalInsulin();
       }
 
+      // ②必要な補正インスリン単位の計算
       function calcCorrectionInsulin() {
-          const preSnackGlucose = parseFloat(document.getElementById('preSnackGlucose').value);
-          // Your calculation for correction insulin based on pre-snack glucose goes here
-          const correctionUnits = ( (preSnackGlucose-100)/50 ).toFixed(2);
-          document.getElementById('resultCorrection').innerText = correctionUnits;
-          calcTotalInsulin();
+        const preSnackGlucose = parseFloat(
+          document.getElementById('preSnackGlucose').value
+        );
+        const correctionUnits = ((preSnackGlucose - 100) / 50).toFixed(1); // 1桁までの小数点表示
+        document.getElementById('resultCorrection').innerText = correctionUnits;
+        calcTotalInsulin();
       }
 
+      // ③昼食時補正インスリンの残存計算
+      function calcRemainingInsulin() {
+        // 表示されている時間をHH:MM形式に変換するための関数
+        function getTimeFromElement(id) {
+          const select = document.getElementById(id);
+          const timeString = select.options[select.selectedIndex].value;
+          const [hours, minutes] = timeString.split(':');
+          return parseInt(hours) * 60 + parseInt(minutes);
+        }
+
+        const preLunchGlucose = parseFloat(
+          document.getElementById('preLunchGlucose').value
+        );
+        const lunchTime = getTimeFromElement('lunchTime');
+        const snackTime = getTimeFromElement('snackTime');
+
+        const elapsedTime = (snackTime - lunchTime) / 60; // 分単位から時間単位に変換
+        const remainingRate = 1 - 0.25 * elapsedTime;
+        const lunchCorrectionInsulin = (preLunchGlucose - 100) / 50;
+        const remainingInsulin = lunchCorrectionInsulin * remainingRate;
+
+        document.getElementById('remainingInsulin').innerText =
+          remainingInsulin.toFixed(1);
+
+        calcTotalInsulin();
+      }
+
+      // 必要なインスリン量の合計計算
       function calcTotalInsulin() {
-          const insulin = parseFloat(document.getElementById('resultInsulin').innerText);
-          const correction = parseFloat(document.getElementById('resultCorrection').innerText);
-          const totalInsulin = insulin + correction;
-          document.getElementById('totalInsulin').innerText = totalInsulin.toFixed(2);
+        const insulin = parseFloat(
+          document.getElementById('resultInsulin').innerText
+        );
+        const correction = parseFloat(
+          document.getElementById('resultCorrection').innerText
+        );
+        const totalInsulin = insulin + correction;
+        document.getElementById('totalInsulin').innerText =
+          totalInsulin.toFixed(1);
       }
 
       // 幅自動調整
-      function autoResizeInput(el) {
-        el.style.width = (el.value.length + 3) + 'ch';
+      function autoResize(el) {
+        el.style.width = el.value.length + 3 + 'ch';
       }
 
+      // ロード時に1つ目の要素ににfocusする
       function focusOnInput() {
         const input = document.getElementById('snackCarbs');
         input.focus();
       }
+
+      // 時間の選択肢を30分ごとで表示
+      const selects = document.querySelectorAll('.time');
+
+      selects.forEach((select) => {
+        const isLunchTime = select.id === 'lunchTime';
+        const isSnackTime = select.id === 'snackTime';
+
+        for (let hours = 10; hours < 17; hours++) {
+          for (let minutes = 0; minutes < 60; minutes += 30) {
+            const hourString = String(hours).padStart(2, '0');
+            const minuteString = String(minutes).padStart(2, '0');
+            const timeString = `${hourString}:${minuteString}`;
+
+            const option = document.createElement('option');
+            option.value = timeString;
+            option.textContent = timeString;
+
+            if (isLunchTime && timeString === '12:00') {
+              option.selected = true;
+            }
+
+            if (isSnackTime && timeString === '15:00') {
+              option.selected = true;
+            }
+
+            select.appendChild(option);
+          }
+        }
+      });
     </script>
   </body>
 </html>
