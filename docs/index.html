@@ -14,7 +14,7 @@
       <input
         type="number"
         id="snackCarbs"
-        value="120"
+        value="50"
         style="width: auto"
         onchange="calcSnackInsulin(), autoResize(this)"
       /> </label
@@ -69,12 +69,20 @@
 
     <label
       >昼食時間
-      <select id="lunchTime" class="time"></select>
+      <select
+        id="lunchTime"
+        class="time"
+        onchange="calcRemainingInsulin()"
+      ></select>
     </label>
 
     <label
       >おやつ時間
-      <select id="snackTime" class="time"></select>
+      <select
+        id="snackTime"
+        class="time"
+        onchange="calcRemainingInsulin()"
+      ></select>
     </label>
     <br />
 
@@ -151,7 +159,10 @@
         const correction = parseFloat(
           document.getElementById('resultCorrection').innerText
         );
-        const totalInsulin = insulin + correction;
+        const remaining = parseFloat(
+          document.getElementById('remainingInsulin').innerText
+        );
+        const totalInsulin = insulin + correction - remaining;
         document.getElementById('totalInsulin').innerText =
           totalInsulin.toFixed(1);
       }
