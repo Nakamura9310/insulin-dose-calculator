@@ -9,14 +9,14 @@
   <body onload="onLoad()">
     <h1>Insulin Calculator</h1>
 
-    <h2>①おやつに必要なインスリン単位の計算</h2>
+    <h3>①おやつに必要なインスリン単位の計算</h3>
     <label
       >おやつのカーボ量 (g):
       <input
         type="number"
         id="snackCarbs"
         value="50"
-        style="width: auto"
+        style="width: 50px"
         onchange="calcSnackInsulin(), autoResize(this)"
       /> </label
     ><br /><br />
@@ -27,7 +27,7 @@
         type="number"
         id="insulinCarbs"
         value="20"
-        style="width: auto"
+        style="width: 50px"
         onchange="calcSnackInsulin(), autoResize(this)"
       />
     </label>
@@ -37,14 +37,14 @@
       <span id="resultInsulin" class="highlight"></span>
     </p>
 
-    <h2>②必要な補正インスリン単位の計算</h2>
+    <h3>②必要な補正インスリン単位の計算</h3>
     <label
       >おやつ前血糖値:
       <input
         type="number"
         id="preSnackGlucose"
         value="200"
-        style="width: auto"
+        style="width: 50px"
         onchange="calcCorrectionInsulin(), autoResize(this)"
       />
     </label>
@@ -56,17 +56,18 @@
       <span id="resultCorrection" class="highlight"></span>
     </p>
 
-    <h2>③昼食時補正インスリンの残存計算</h2>
+    <h3>③昼食時補正インスリンの残存計算</h3>
     <label
       >昼食前血糖値
       <input
         type="number"
         id="preLunchGlucose"
         value="200"
-        style="width: auto"
+        style="width: 50px"
         onchange="calcRemainingInsulin(), autoResize(this)"
       />
     </label>
+    <br />
 
     <label
       >昼食時間
@@ -76,6 +77,7 @@
         onchange="calcRemainingInsulin()"
       ></select>
     </label>
+    <br />
 
     <label
       >おやつ時間
@@ -89,9 +91,9 @@
 
     <p>残存インスリン:<span id="remainingInsulin" class="highlight"></span></p>
 
-    <h2>
+    <h3>
       ▶ 必要なインスリン単位 <span id="totalInsulin" class="highlight"></span>
-    </h2>
+    </h3>
 
     <script>
       // ページ読み込み時の処理
