@@ -15,6 +15,13 @@
   <body onload="onLoad()">
     <h1>Insulin Calculator</h1>
 
+    <h3>
+      ▶ 必要なインスリン単位:①+②-③=<span
+        id="totalInsulin"
+        class="highlight"
+      ></span>
+    </h3>
+
     <h3>①おやつに必要なインスリン単位の計算</h3>
     <label
       >おやつのカーボ量 (g):
@@ -96,10 +103,6 @@
     <br />
 
     <p>残存インスリン:<span id="remainingInsulin" class="highlight"></span></p>
-
-    <h3>
-      ▶ 必要なインスリン単位 <span id="totalInsulin" class="highlight"></span>
-    </h3>
 
     <script>
       // ページ読み込み時の処理
